@@ -1,10 +1,10 @@
-// You'll need to replace the information below
+// You'll `need to replace the information below
 // with that of your own services.
 //
 var Config = {
-  BOSH_SERVICE: 'http://vm.local:5280/http-bind',
-  XMPP_SERVER:  'vm.local',
-  PUBSUB_NODE:  'pubsub.demo.v1'
+  BOSH_SERVICE: 'http://localhost/http-bind/',
+  XMPP_SERVER:  'localhost',
+  PUBSUB_NODE:  '/home/localhost/final_testing2'
 }
 
 var MessageType = {

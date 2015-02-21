@@ -1,4 +1,8 @@
-var Client = {
+Strophe.log = function (level, msg) {
+  console.log(msg);
+};
+
+  var Client = {
   pubsub_server: 'pubsub.' + Config.XMPP_SERVER,
   connection: null,
   subscribed: false,
@@ -60,6 +64,7 @@ var Client = {
   },
 
   on_event: function (message) {
+    console.log("================>");
     if (!Client.subscribed) {
       return true;
     }
@@ -109,7 +114,7 @@ var Client = {
       Client.connection.send($pres().c('priority').t('-1'));
       Client.connection.pubsub.subscribe(
         Client.connection.jid,
-	'pubsub.' + Config.XMPP_SERVER,
+       'pubsub.' + Config.XMPP_SERVER,
         Config.PUBSUB_NODE,
         [],
         Client.on_event,

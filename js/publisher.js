@@ -1,7 +1,7 @@
 var Control = {
   // start admin credentials
-  admin_jid: 'bbc@vm.local',
-  admin_pass: 'bbc',
+  admin_jid: 'admin@localhost',
+  admin_pass: 'passwrod',
   // end admin credentials
 
   pubsub_server: 'pubsub.' + Config.XMPP_SERVER,
@@ -13,7 +13,7 @@ var Control = {
   // log to console if available
   log: function (msg) { 
     if (Control.show_log && window.console) {
-      console.log(msg);
+    console.log(msg);
     }
   },
 
@@ -85,6 +85,30 @@ var Control = {
     Control.feedback('Connected', '#00FF00');
     Control.init();
   },
+
+  getUserCredentials: function(){
+    // this.admin_jid = prompt("Username");
+    // this.admin_pass = prompt("Password");
+  },
+  on_subscribe_event :function(msg){
+    console.log("Message Received",msg);
+    return true;
+  },
+  on_subscribe : function(sub){
+    console.log("======> Succcessfully Subscibed");
+    return true;
+  },
+  subscribe:function(){
+    console.log("====> Subscribing");
+    Control.connection.pubsub.subscribe(
+      Control.admin_jid,
+      'pubsub.' + Config.XMPP_SERVER,
+      Config.PUBSUB_NODE,
+      [],
+      Control.on_subscribe_event,
+      Control.on_subscribe
+    );
+  }
 }
 
 $(document).ready(function () {
@@ -94,11 +118,13 @@ $(document).ready(function () {
 
 // this does the initial connection to the XMPP server
 $(document).bind('connect', function () {
+  Control.getUserCredentials();
+
   var conn = new Strophe.Connection(Config.BOSH_SERVICE);
   Control.connection = conn;
   Control.connection.rawInput = Control.raw_input;
   Control.connection.rawOutput = Control.raw_output;
-  Control.connection.addHandler(Control.on_result, null, "message", null, null);
+  //Control.connection.addHandler(Control.on_result, null, "message", null, null);
   Control.connection.connect(
     Control.admin_jid, Control.admin_pass, function (status) {
       if (status == Strophe.Status.CONNECTING) {
@@ -123,14 +149,24 @@ $(document).bind('connect', function () {
 
 $(document).bind('connected', function () {
   Control.feedback('Connecting... (2 of 3)', '#00CC00');
+  /*Control.on_create_node();
+  Control.subscribe();*/
 
   // first we make sure the pubsub node exists
   // buy trying to create it again
+  console.log("Creating Node==============>");
   Control.connection.pubsub.createNode(
     Control.admin_jid,
     Control.pubsub_server,
     Config.PUBSUB_NODE,
-    {},
+    {
+      "pubsub#publish_model": "open",
+      "pubsub#persist_items": "0",
+      "pubsub#notify_retract": "0",
+      "pubsub#notify_sub": "0",
+      "pubsub#notify_config":"0",
+      "pubsub#presence_based_delivery": "0"
+    },
     Control.on_create_node
   );
 });
