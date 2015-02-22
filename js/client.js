@@ -1,6 +1,3 @@
-Strophe.log = function (level, msg) {
-  console.log(msg);
-};
 
   var Client = {
   pubsub_server: 'pubsub.' + Config.XMPP_SERVER,

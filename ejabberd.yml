@@ -214,7 +214,7 @@ listen:
 ## If you want to use a different method,
 ## comment this line and enable the correct ones.
 ##
-auth_method: internal
+## auth_method: internal
 
 ##
 ## Store the plain passwords or hashed for SCRAM:
@@ -282,11 +282,13 @@ auth_method: internal
 ##   anonymous_protocol: sasl_anon | login_anon | both
 ##   allow_multiple_connections: true | false
 ##
-## host_config:
-##   "public.example.org":
-##     auth_method: anonymous
-##     allow_multiple_connections: false
-##     anonymous_protocol: sasl_anon
+host_config:
+  "localhost":
+    auth_method: 
+      - odbc
+      - anonymous
+    allow_multiple_connections: true
+    anonymous_protocol: both
 ##
 ## To use both anonymous and internal authentication:
 ##
@@ -308,11 +310,12 @@ auth_method: internal
 ##
 ## MySQL server:
 ##
-## odbc_type: mysql
-## odbc_server: "server"
-## odbc_database: "database"
-## odbc_username: "username"
-## odbc_password: "password"
+odbc_type: mysql
+odbc_server: "localhost"
+odbc_database: "ejabberd"
+odbc_username: "root"
+odbc_password: "test"
+odbc_port: 3306
 ##
 ## If you want to specify the port:
 ## odbc_port: 1234
@@ -574,7 +577,7 @@ modules:
   mod_privacy: []
   mod_private: []
   ## mod_proxy65: []
-  mod_pubsub: 
+  mod_pubsub_odbc: 
     access_createnode: pubsub_createnode
     ## reduces resource comsumption, but XEP incompliant
     ignore_pep_from_offline: true
@@ -583,8 +586,8 @@ modules:
     last_item_cache: false
     plugins: 
       - "flat"
-      - "hometree"
-      - "pep" # pep requires mod_caps
+     ## - "hometree"
+     ## - "pep" # pep requires mod_caps
   mod_register: 
     ##
     ## Protect In-Band account registrations with CAPTCHA.
@@ -624,7 +627,7 @@ modules:
     ## access_from: deny
 
     access: register
-  mod_roster: []
+  mod_roster_odbc: []
   mod_shared_roster: []
   ## mod_time: []
   mod_vcard: []

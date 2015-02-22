@@ -4,7 +4,7 @@
 var Config = {
   BOSH_SERVICE: 'http://localhost/http-bind/',
   XMPP_SERVER:  'localhost',
-  PUBSUB_NODE:  '/home/localhost/final_testing2'
+  PUBSUB_NODE:  '/home/localhost/final_testing7'
 }
 
 var MessageType = {

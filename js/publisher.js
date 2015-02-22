@@ -1,7 +1,49 @@
+
+function json2xml(o, tab) {
+   var toXml = function(v, name, ind) {
+      var xml = "";
+      if (v instanceof Array) {
+         for (var i=0, n=v.length; i<n; i++)
+            xml += ind + toXml(v[i], name, ind+"\t") + "\n";
+      }
+      else if (typeof(v) == "object") {
+         var hasChild = false;
+         xml += ind + "<" + name;
+         for (var m in v) {
+            if (m.charAt(0) == "@")
+               xml += " " + m.substr(1) + "=\"" + v[m].toString() + "\"";
+            else
+               hasChild = true;
+         }
+         xml += hasChild ? ">" : "/>";
+         if (hasChild) {
+            for (var m in v) {
+               if (m == "#text")
+                  xml += v[m];
+               else if (m == "#cdata")
+                  xml += "<![CDATA[" + v[m] + "]]>";
+               else if (m.charAt(0) != "@")
+                  xml += toXml(v[m], m, ind+"\t");
+            }
+            xml += (xml.charAt(xml.length-1)=="\n"?ind:"") + "</" + name + ">";
+         }
+      }
+      else {
+         xml += ind + "<" + name + ">" + v.toString() +  "</" + name + ">";
+      }
+      return xml;
+   }, xml="";
+   for (var m in o)
+      xml += toXml(o[m], m, "");
+   return tab ? xml.replace(/\t/g, tab) : xml.replace(/\t|\n/g, "");
+}
+
+
+
 var Control = {
   // start admin credentials
   admin_jid: 'admin@localhost',
-  admin_pass: 'passwrod',
+  admin_pass: 'testing',
   // end admin credentials
 
   pubsub_server: 'pubsub.' + Config.XMPP_SERVER,
@@ -48,13 +90,17 @@ var Control = {
   // push the data to the clients
   publish: function (data) {
     if (data.message == '') return;
-    var _d = $build('data', { 'type' : data.type }).t(data.message).toString(); 
-
+    var msg = { test : "test"};
+    var data = {
+      "message" : msg
+    };
+   // var _d = $build('data', { 'type' : "visitor disconnected" }).t(data.message).toString();
+    console.log(JSON.stringify(data));
     Control.connection.pubsub.publish(
       Control.admin_jid,
       Control.pubsub_server,
       Config.PUBSUB_NODE,
-      [_d],
+      [JSON.stringify(data)],
       Control.on_send
     );
   },
@@ -87,10 +133,16 @@ var Control = {
   },
 
   getUserCredentials: function(){
-    // this.admin_jid = prompt("Username");
-    // this.admin_pass = prompt("Password");
+    this.admin_jid = prompt("Username");
+    this.admin_pass = prompt("Password");
   },
   on_subscribe_event :function(msg){
+    var elements = msg.getElementsByTagName('entry');
+    for(var i =0 ; i < elements.length; i++){
+      console.log(elements[i].textContent);
+      window.testMessage = elements[i].textContent;
+
+    }
     console.log("Message Received",msg);
     return true;
   },
@@ -149,8 +201,8 @@ $(document).bind('connect', function () {
 
 $(document).bind('connected', function () {
   Control.feedback('Connecting... (2 of 3)', '#00CC00');
-  /*Control.on_create_node();
-  Control.subscribe();*/
+  // Control.on_create_node();
+  // Control.subscribe();
 
   // first we make sure the pubsub node exists
   // buy trying to create it again
@@ -160,12 +212,13 @@ $(document).bind('connected', function () {
     Control.pubsub_server,
     Config.PUBSUB_NODE,
     {
-      "pubsub#publish_model": "open",
       "pubsub#persist_items": "0",
       "pubsub#notify_retract": "0",
       "pubsub#notify_sub": "0",
       "pubsub#notify_config":"0",
-      "pubsub#presence_based_delivery": "0"
+      "pubsub#presence_based_delivery": "0",
+      "pubsub#max_items": "0",
+      "pubsub#send_last_published_item": "never"
     },
     Control.on_create_node
   );
