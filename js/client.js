@@ -93,7 +93,17 @@
   },
 
   on_connect: function (status) {
-    if (status == Strophe.Status.CONNECTING) {
+    if (status === Strophe.Status.REGISTER) {
+        // fill out the fields
+        Client.connection.register.fields.username = "lovelin";
+        Client.connection.register.fields.password = "12345";
+        // calling submit will continue the registration process
+        Client.connection.register.submit();
+    } else if (status === Strophe.Status.REGISTERED) {
+        console.log("registered!");
+        // calling login will authenticate the registered JID.
+        Client.connection.authenticate();
+    } else if (status == Strophe.Status.CONNECTING) {
       Client.log('Connecting...');
       Client.feedback('Connecting... (1 of 2)', '#009900');
     } else if (status == Strophe.Status.CONNFAIL) {
@@ -127,9 +137,5 @@ $(document).ready(function () {
   Client.connection = conn;
   Client.connection.rawInput = Client.raw_input;
   Client.connection.rawOutput = Client.raw_output;
-  Client.connection.connect(
-    Config.XMPP_SERVER + '/pubsub',
-    '',
-    Client.on_connect
-  );
+  Client.connection.register.connect("localhost", Client.on_connect);
 });

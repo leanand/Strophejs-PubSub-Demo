@@ -286,9 +286,7 @@ host_config:
   "localhost":
     auth_method: 
       - odbc
-      - anonymous
     allow_multiple_connections: true
-    anonymous_protocol: both
 ##
 ## To use both anonymous and internal authentication:
 ##
